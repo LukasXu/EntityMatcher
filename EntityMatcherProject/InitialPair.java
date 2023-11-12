@@ -1,3 +1,4 @@
+package EntityMatcherProject;
 public class InitialPair {
     int year;
     int frequency;

@@ -1,4 +1,4 @@
-package Functions;
+package EntityMatcherProject.Functions;
 
 public interface Function {
 

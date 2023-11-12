@@ -1,26 +1,43 @@
+package EntityMatcherProject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-class EntityMatcher {
+class Main {
+    
+    
     public static void main(String[] args) {
+        EntityMatcher em = new EntityMatcher();
+        List<TableEntry> table = parseToList();
+        //System.out.println(em.getExampleResult());
+        Pair bestRule = em.getSortedRuleSet().get(em.getSortedRuleSet().size() - 1).getPair();
+        em.filter(table, bestRule);
+        System.out.println(table);
+    
+    }
+
+    public static List<TableEntry> parseToList() {
         int counter = 0;
         File file = new File("1_20000_nopos.txt");
-
-        List<String> wordList = new ArrayList<String>();
+        List<TableEntry> list = new ArrayList<>();      
         Scanner sc;
         try {
             sc = new Scanner(file);
-            while (sc.hasNextLine() && counter < 1) {
+            //Reads every entry and turns it into a InitialEntry object
+            while (sc.hasNextLine() && counter < 5) {
                 InitialEntry entry = parseInitialEntry(sc.nextLine());
-                System.out.println(entry.getSaxString(8));
+                TableEntry tableEntry = new TableEntry(entry);
+                list.add(tableEntry);
                 counter++;
             }
+            //System.out.println(list);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        return list;
     }
 
     public static InitialEntry parseInitialEntry(String record) {
