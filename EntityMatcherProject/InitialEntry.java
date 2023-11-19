@@ -2,6 +2,8 @@ package EntityMatcherProject;
 import java.util.ArrayList;
 import java.util.List;
 
+import EntityMatcherProject.Pair.InitialPair;
+
 public class InitialEntry {
     private String word;
     private double mean;

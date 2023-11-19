@@ -1,7 +1,7 @@
 package EntityMatcherProject.SimilarityFunctions;
 import EntityMatcherProject.TableEntry;
 import EntityMatcherProject.Functions.AltEditDistance;
-import EntityMatcherProject.Functions.EditDistance;
+
 
 public class WordEditDistance extends SimilarityFunction {
     String name = "Edit Distance";
