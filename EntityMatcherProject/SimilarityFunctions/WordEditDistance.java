@@ -27,4 +27,9 @@ public class WordEditDistance extends SimilarityFunction {
        return name;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }

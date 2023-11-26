@@ -9,6 +9,8 @@ public abstract class SimilarityFunction {
 
     public abstract String getName();
 
+    public abstract String toString();
+
     public SimilarityFunction() {
         this.id = counter;
         counter++;

@@ -6,53 +6,63 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.text.TabExpander;
+
 import EntityMatcherProject.Pair.TableEntryPair;
 import EntityMatcherProject.Rules.Rule;
 import EntityMatcherProject.Rules.RulePairComparitor;
 import EntityMatcherProject.Rules.RulePercentagePair;
-import EntityMatcherProject.SimilarityFunctions.DumbFunction;
+import EntityMatcherProject.SimilarityFunctions.GermanSRule;
 import EntityMatcherProject.SimilarityFunctions.SaxFunction;
 import EntityMatcherProject.SimilarityFunctions.SimilarityFunction;
 import EntityMatcherProject.SimilarityFunctions.WordEditDistance;
 
 public class EntityMatcher {
     private Map<Integer, SimilarityFunction> ruleMap = new HashMap<>(); //Mappt regel id auf Regel
-    private List<RulePercentagePair> sortedRuleSet;
+    private List<RulePercentagePair> sortedRuleSet; //Best Rule List
     public static List<Rule> ruleSet; //Konjunktion von Lamda
-
-    static List<TableEntry> exampleTable = Arrays.asList(
-        Parser.findEntry("dass"),
-        Parser.findEntry("daß"),
-        Parser.findEntry("niedrig"),
-        Parser.findEntry("dann"),
-        Parser.findEntry("denn"),
-        Parser.findEntry("den"),
-        Parser.findEntry("niedriger")
-    );
-
-    static List<TableEntryPair> posEx = Arrays.asList(
-        new TableEntryPair(Parser.findEntry("dass"), Parser.findEntry("daß")),
-        new TableEntryPair(Parser.findEntry("niedrig"), Parser.findEntry("niedriger"))
-    );
+    private List<Rule> disjunctionRule = new ArrayList<>(); //Disjuntion von Regeln
+    static List<TableEntry> exampleTable = new ArrayList<>();
+    static List<TableEntryPair> posEx = new ArrayList<>();
 
     public EntityMatcher() {
+        initExampleLists();
+        initPosExampleList();
         initRules();
-        System.out.println("Example Table: " + exampleTable);
+        //System.out.println("Example Table: " + exampleTable);
+
         if(ruleSet == null) {
             List<Rule> rules = generateRuleSetSize1();
             rules.addAll(generateRuleSetSize2());  
             rules.addAll(generateRuleSetSize3());            
             ruleSet = rules;
-            //System.out.println("Ruleset: " + ruleSet);
+            System.out.println("Ruleset: " + ruleSet + "\n");
+
             this.sortedRuleSet = getExampleResult();
             //System.out.println("Best Rule List: " + sortedRuleSet);
         }   
     }
 
+    private void initExampleLists() {
+        exampleTable.add(Parser.findEntry("dass"));
+        exampleTable.add(Parser.findEntry("daß"));
+        exampleTable.add(Parser.findEntry("niedrig"));
+        exampleTable.add(Parser.findEntry("niedriger"));
+        exampleTable.add(Parser.findEntry("dann"));
+        exampleTable.add(Parser.findEntry("denn"));
+        exampleTable.add(Parser.findEntry("den"));
+    }
+
+    private void initPosExampleList() {
+        posEx.add(new TableEntryPair(Parser.findEntry("dass"), Parser.findEntry("daß")));
+        posEx.add(new TableEntryPair(Parser.findEntry("niedrig"), Parser.findEntry("niedriger")));
+    }
+
     private void initRules() {
     	ruleMap.put(0, new WordEditDistance());
         ruleMap.put(1, new SaxFunction());
-        ruleMap.put(2, new DumbFunction());
+        ruleMap.put(2, new GermanSRule());
     }
 
     //Wendet rule auf table an.
@@ -60,6 +70,8 @@ public class EntityMatcher {
     public void filter(List<TableEntry> table, Rule rule) {
         System.out.println("Zusammenfassen von: " + table);
         List<TableEntry> dummy = new ArrayList<>();
+
+        //Schaue ob jedes Paar matched und falls es matched, schreibe es in dummy und entferne es aus der Table
         for(int i = 0; i < table.size(); i++) {
              for (int j = i + 1; j < table.size(); j++) {
                 boolean b = rule.match(table.get(i), table.get(j));
@@ -76,14 +88,8 @@ public class EntityMatcher {
         //Falls Elemente zusammengefasst werden, schreibe es in table und die Paare in posEx
         if(dummy.size() > 0) {
             table.add(dummy.get(0));
-            /* for(int i = 0; i < dummy.size(); i++) {
-                for (int j = i + 1; j < table.size(); j++) {
-                    posEx.add(new TableEntryPair(dummy.get(i), dummy.get(j)));
-                }
-            } */
         }
         System.out.println("Gefilterte Liste: " + table + "\n");
-        //System.out.println("Neue PosEx " + posEx);
     }
 
     //Errechnet anhand des Beispiels die beste Regel aus
@@ -91,20 +97,26 @@ public class EntityMatcher {
         List<RulePercentagePair> resultList = new ArrayList<>();
        
         for(int i = 0; i < ruleSet.size(); i++) {
-            Rule pair = ruleSet.get(i);
-            double percentage = matchEntries(pair, exampleTable);
-            resultList.add(new RulePercentagePair(pair, percentage));
+            Rule pair = ruleSet.get(i); //Konjunktion von allen möglichen Regeln
+            List<TableEntryPair> placeholder = new ArrayList<>();
+            double percentage = matchEntries(pair, exampleTable, placeholder);
+
+            //System.out.println("Regel: " + pair.toString());
+            //System.out.println("Placholder: " + placeholder);
+
+            resultList.add(new RulePercentagePair(pair, percentage, placeholder));
         }
         Collections.sort(resultList, new RulePairComparitor());
         return resultList;
     }
 
     //Gibt die Erfolgsrate einer Regel angewendet an einer Tabelle an
-    private double matchEntries(Rule rule, List<TableEntry> table) {
+    private double matchEntries(Rule rule, List<TableEntry> table, List<TableEntryPair> matches) {
         int matchCounter = 0;
         int cartesianProductSize = 0;
 
         //System.out.println("Rule: " + rule.toString());
+
         for(int i = 0; i < table.size(); i++) {
              for (int j = i + 1; j < table.size(); j++) {    
 
@@ -112,12 +124,18 @@ public class EntityMatcher {
                     continue;
                 }
                 
+                //System.out.println("Entry1:" + table.get(i) + "Entry2: " + table.get(j) + " Regel: " + rule.toString());
+        
                 boolean match = rule.match(table.get(i), table.get(j));    
                 TableEntryPair entryPair = new TableEntryPair(table.get(i), table.get(j));    
                 cartesianProductSize++;
 
                 if((match && posEx.contains(entryPair)) || (match == false && posEx.contains(entryPair) == false)) {
                     //System.out.println("Entry: " + entryPair.toString() + " - Contains " + posEx.contains(entryPair) + " - Match: " + match);
+
+                    if(match && posEx.contains(entryPair)) {
+                        matches.add(entryPair);
+                    } 
                     matchCounter++;
                 }
             }
@@ -128,6 +146,55 @@ public class EntityMatcher {
         //System.out.println("Result: " + matchCounter + "/" + denom + " = " + result + "\n");
         return result;
     }
+
+    ////////// Setter/Getter /////////////////////////////////////////////////////////////////////////////
+
+    public void removePair(TableEntryPair pair) {
+        //System.out.println("Contains: " + posEx.contains(pair));
+        
+        posEx.remove(pair);
+    }
+
+    public void addAcceptedRule(Rule rule) {
+        this.disjunctionRule.add(rule);
+    }
+
+    public List<Rule> getDisjunctionRule() {
+        return disjunctionRule;
+    }
+
+    public static List<TableEntryPair> getPosEx() {
+        return posEx;
+    }
+
+    public List<RulePercentagePair> recalculateBestRule() {
+        List<RulePercentagePair> list = getExampleResult();
+        return list;
+    }
+
+    public List<RulePercentagePair> getSortedRuleSet() {
+        return sortedRuleSet;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    public void filterRuleSet(Rule rule) {
+        List<Rule> toRemove = new ArrayList<>();
+        
+        for(int i = 0; i < ruleSet.size(); i++) {
+            if(ruleSet.get(i).hasRule(rule)) {
+                toRemove.add(ruleSet.get(i));
+            }
+        } 
+        //Entferne jede Regel von toRemove aus RuleSet
+        for(Rule r: toRemove) {
+            ruleSet.remove(r);
+        }
+
+        //System.out.println("Filtered Rules Set: " + ruleSet + "\n");
+    }
+
+
 
     private List<Rule> generateRuleSetSize1() {
         List<Rule> ruleSet = new ArrayList<>();
@@ -174,8 +241,5 @@ public class EntityMatcher {
         return ruleSet;
     }
 
-    public List<RulePercentagePair> getSortedRuleSet() {
-        return sortedRuleSet;
-    }
     
 }

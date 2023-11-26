@@ -6,7 +6,7 @@ import EntityMatcherProject.TableEntry;
 import EntityMatcherProject.SimilarityFunctions.SimilarityFunction;
 
 public class Rule {
-   List<SimilarityFunction> rules; // r1 ^ r2 ^ r3  möglich
+   private List<SimilarityFunction> rules; // r1 ^ r2 ^ r3  möglich
 
    public Rule(List<SimilarityFunction> rules) {
     this.rules = rules;
@@ -40,5 +40,27 @@ public class Rule {
          }
       }
       return string;
+   }
+
+   public List<SimilarityFunction> getRules() {
+       return rules;
+   }
+
+  
+   public boolean hasRule(Rule rule) {
+      List<SimilarityFunction> otherRules = rule.getRules();
+      
+
+      //If every rule of the parameter is in this rule list it return true
+      for(SimilarityFunction function: otherRules) {
+
+         //System.out.println("Current Rule: " + this.rules.toString() + " Compared with: " + function.toString());
+         //System.out.println("Contains" + this.rules.contains(function));
+         if(this.rules.contains(function) == false) {
+            
+            return false;
+         }
+      }
+      return true;
    }
 }

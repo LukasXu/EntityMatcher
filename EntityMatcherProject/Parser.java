@@ -7,21 +7,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import EntityMatcherProject.Pair.InitialPair;
 
 public class Parser {
     private static File file = new File("1_20000_nopos.txt");
-    private static HashMap<String, List<TableEntry>> tableEntryMap = new HashMap<>(); //Key = Wort,
+    private static HashMap<String, List<TableEntry>> tableEntryMap = new HashMap<>(); //Key = Wort, Prefix -> Wortgruppe#
+    Pattern noNumberPattern = Pattern.compile("[0-9]", Pattern.CASE_INSENSITIVE);
 
     public Parser() {
-     
-        //long start1 = System.nanoTime();
         init();
         thinOutMap();
-        //long end1 = System.nanoTime(); 
-        //System.out.println("Parsing List took: "+ (end1-start1) + "ns");
-        System.out.println("Hashmap: " + tableEntryMap);
+        //parseTableMap();
+    }
+
+    public void parseTableMap() {
+        for(Map.Entry<String, List<TableEntry>> entry: tableEntryMap.entrySet()) {
+            String key = entry.getKey();
+            List<TableEntry> list = entry.getValue(); 
+            System.out.println("Key: " + key + "\nList: " + list + "\n");
+        }
     }
     
     //Parsed txt Einträge in TableEntry und speichert es in die Hashmap
@@ -35,6 +42,17 @@ public class Parser {
                 if(entry.getWord().length() <= 1) {
                     continue;
                 }
+
+                Matcher matcherNumber = noNumberPattern.matcher(entry.getWord());
+                boolean containsNumber = matcherNumber.find();
+
+                if(containsNumber == true) {
+                    continue;
+                }
+
+               /*  if(entry.getWord().contains(".")) {
+                    System.out.println(entry.getWord());
+                }; */
 
                 TableEntry tableEntry = new TableEntry(entry);     
                 matchPrefix(2, tableEntry);
@@ -146,4 +164,6 @@ public class Parser {
     public static HashMap<String, List<TableEntry>> getTableEntryMap() {
         return tableEntryMap;
     }
+
+    
 }
