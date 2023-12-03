@@ -1,5 +1,4 @@
 package EntityMatcherProject;
-import java.util.ArrayList;
 import java.util.List;
 
 import EntityMatcherProject.Pair.InitialPair;
@@ -10,14 +9,16 @@ public class InitialEntry {
     private double deviation;
     private List<InitialPair> pairList;
     private String saxString;
+    private double occurenceAvg;
     private static int saxLength = 8;
 
     public InitialEntry(String word, List<InitialPair> pairList) {
         this.word = word;
         this.pairList = pairList;
+        setOccurenceAvg();
         this.mean = setMean();
         this.deviation = setDeviation();
-        this.saxString = setSaxString(saxLength);
+        this.saxString = SaxGenerator.generateSaxString(saxLength, this);
     }
 
     private double setMean() {
@@ -34,6 +35,15 @@ public class InitialEntry {
             sum += Math.pow((pairList.get(i).getFrequency() - this.mean), 2);
         }
         return Math.sqrt(sum / pairList.size());
+    }
+
+    private void setOccurenceAvg() {
+        double sum = 0;
+        for(InitialPair p : pairList) {
+            sum += (double) p.getFrequency() / (getMaxYear() - getMinYear());
+        }
+        this.occurenceAvg = sum;
+        //System.out.println("OccAVg: " + occurenceAvg);
     }
 
     public int getMinFreqYear() {
@@ -56,61 +66,6 @@ public class InitialEntry {
             }
         }
         return num;
-    }
-
-    private String setSaxString(int bracketCount) {
-        List<Double> list = new ArrayList<>();
-        int interval = (this.getMaxYear() - this.getMinYear()) / bracketCount;
-        int counter = 0;
-        double factor = (double) bracketCount / (this.getMaxYear() - this.getMinYear());
-
-        // System.out.println("N: " + (this.getMaxYear() - this.getMinYear()) + " From:
-        // " + this.getMinYear() + " To: " + this.getMaxYear());
-        // System.out.println("Factor:" + factor);
-        // System.out.println("Interval:" + interval);
-
-        for (int i = 0; i < bracketCount; i++) {
-            if (counter >= pairList.size()) {
-                break;
-            }
-
-            double sum = 0;
-
-            int start = this.getMinYear() + (interval * i);
-            int end = (start + interval);
-            //System.out.println("Start: " + start + " End: " + end);
-            int currentYear = pairList.get(counter).getYear();
-
-            while (start <= currentYear && currentYear < end) {
-                int year = pairList.get(counter).getYear();
-                currentYear = year;
-                if (year >= end) {
-                    break;
-                }
-                //System.out.println("Year: " + year);
-                sum += (pairList.get(counter).getFrequency() - this.mean) / this.deviation;
-                counter++;
-            }
-            //System.out.println("Sum:" + sum);
-            double avg = sum * factor;
-            //System.out.println("AVG:" + avg);
-            list.add(avg);
-            start += interval;
-        }
-
-        // Für A = 3
-        String sax = "";
-        for (int i = 0; i < list.size(); i++) {
-            double num = list.get(i);
-            if (num < -0.43) {
-                sax += "a";
-            } else if (-0.43 <= num && num < 0.43) {
-                sax += "b";
-            } else {
-                sax += "c";
-            }
-        }
-        return sax;
     }
 
     public String toString() {
@@ -138,6 +93,22 @@ public class InitialEntry {
 
     public int getMaxYear() {
         return pairList.get(pairList.size() - 1).getYear();
+    }
+    
+    public List<InitialPair> getPairList() {
+        return pairList;
+    }
+
+    public double getMean() {
+        return mean;
+    }
+
+    public double getDeviation() {
+        return deviation;
+    }
+
+    public double getOccurenceAvg() {
+        return occurenceAvg;
     }
 
 }

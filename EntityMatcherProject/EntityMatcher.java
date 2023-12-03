@@ -14,6 +14,7 @@ import EntityMatcherProject.Rules.Rule;
 import EntityMatcherProject.Rules.RulePairComparitor;
 import EntityMatcherProject.Rules.RulePercentagePair;
 import EntityMatcherProject.SimilarityFunctions.GermanSRule;
+import EntityMatcherProject.SimilarityFunctions.OccurenceRule;
 import EntityMatcherProject.SimilarityFunctions.SaxFunction;
 import EntityMatcherProject.SimilarityFunctions.SimilarityFunction;
 import EntityMatcherProject.SimilarityFunctions.WordEditDistance;
@@ -25,10 +26,13 @@ public class EntityMatcher {
     private List<Rule> disjunctionRule = new ArrayList<>(); //Disjuntion von Regeln
     static List<TableEntry> exampleTable = new ArrayList<>();
     static List<TableEntryPair> posEx = new ArrayList<>();
+    static List<TableEntryPair> negEx = new ArrayList<>();
+
 
     public EntityMatcher() {
         initExampleLists();
         initPosExampleList();
+        initNegExampleList();
         initRules();
         //System.out.println("Example Table: " + exampleTable);
 
@@ -59,10 +63,28 @@ public class EntityMatcher {
         posEx.add(new TableEntryPair(Parser.findEntry("niedrig"), Parser.findEntry("niedriger")));
     }
 
+    private void initNegExampleList() {
+        for(int i = 0; i < exampleTable.size(); i++) {
+            for(int j = i + 1; j < exampleTable.size(); j++) {
+                TableEntryPair p = new TableEntryPair(
+                    Parser.findEntry(exampleTable.get(i).getWord()),
+                    Parser.findEntry(exampleTable.get(j).getWord())
+                    );
+                if(posEx.contains(p) == false) {
+                    negEx.add(p);
+                }
+            }
+        }
+        System.out.println("NegEx: " + negEx);
+    }
+
+    
+
     private void initRules() {
     	ruleMap.put(0, new WordEditDistance());
         ruleMap.put(1, new SaxFunction());
         ruleMap.put(2, new GermanSRule());
+        ruleMap.put(3, new OccurenceRule());
     }
 
     //Wendet rule auf table an.
@@ -111,9 +133,9 @@ public class EntityMatcher {
     }
 
     //Gibt die Erfolgsrate einer Regel angewendet an einer Tabelle an
-    private double matchEntries(Rule rule, List<TableEntry> table, List<TableEntryPair> matches) {
+    private double matchEntries(Rule rule, List<TableEntry> table, List<TableEntryPair> placeholder) {
         int matchCounter = 0;
-        int cartesianProductSize = 0;
+        //int cartesianProductSize = posEx.size() + negEx.size();
 
         //System.out.println("Rule: " + rule.toString());
 
@@ -128,19 +150,19 @@ public class EntityMatcher {
         
                 boolean match = rule.match(table.get(i), table.get(j));    
                 TableEntryPair entryPair = new TableEntryPair(table.get(i), table.get(j));    
-                cartesianProductSize++;
+                //cartesianProductSize++;
 
-                if((match && posEx.contains(entryPair)) || (match == false && posEx.contains(entryPair) == false)) {
+                if((match && posEx.contains(entryPair)) || (match == false && negEx.contains(entryPair) == true)) {
                     //System.out.println("Entry: " + entryPair.toString() + " - Contains " + posEx.contains(entryPair) + " - Match: " + match);
 
                     if(match && posEx.contains(entryPair)) {
-                        matches.add(entryPair);
+                        placeholder.add(entryPair);
                     } 
                     matchCounter++;
                 }
             }
         }
-        int denom = cartesianProductSize;
+        int denom = posEx.size() + negEx.size();
         double result = (double) (matchCounter) / denom;
 
         //System.out.println("Result: " + matchCounter + "/" + denom + " = " + result + "\n");
@@ -207,8 +229,6 @@ public class EntityMatcher {
         return ruleSet;
     }
 
-    //Generates rule of size 2
-    // Ex: lambda1 ^ lambda2
     private List<Rule> generateRuleSetSize2() {
         List<Rule> ruleSet = new ArrayList<>();
         for(int i = 0; i < ruleMap.size(); i++) {

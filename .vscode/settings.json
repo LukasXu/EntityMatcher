@@ -1,3 +1,8 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "EntityMatcherProject/Library/commons-math3-3.6.1.jar"
+    ]
 }

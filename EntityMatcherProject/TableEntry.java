@@ -5,6 +5,7 @@ public class TableEntry {
     private int minYear;
     private int maxYear;
     private int id;
+    private double occurenceAvg;
     private static int counter = 0;
 
     public TableEntry(InitialEntry entry) {
@@ -13,6 +14,7 @@ public class TableEntry {
         this.minYear = entry.getMinFreqYear();
         this.maxYear = entry.getMaxFreqYear();
         this.id = counter;
+        this.occurenceAvg = entry.getOccurenceAvg();
         counter++;
     }
 
@@ -45,5 +47,9 @@ public class TableEntry {
 
     public int getId() {
         return id;
+    }
+
+    public double getOccurenceAvg() {
+        return occurenceAvg;
     }
 }

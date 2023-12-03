@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import EntityMatcherProject.Pair.InitialPair;
 
 public class Parser {
-    private static File file = new File("1_20000_nopos.txt");
+    private File file = new File("1_20000_nopos.txt");
     private static HashMap<String, List<TableEntry>> tableEntryMap = new HashMap<>(); //Key = Wort, Prefix -> Wortgruppe#
     Pattern noNumberPattern = Pattern.compile("[0-9]", Pattern.CASE_INSENSITIVE);
 
@@ -49,10 +49,6 @@ public class Parser {
                 if(containsNumber == true) {
                     continue;
                 }
-
-               /*  if(entry.getWord().contains(".")) {
-                    System.out.println(entry.getWord());
-                }; */
 
                 TableEntry tableEntry = new TableEntry(entry);     
                 matchPrefix(2, tableEntry);
@@ -152,8 +148,10 @@ public class Parser {
         String[] firstSplit = record.split("\t");  
         String word = firstSplit[0];   
         List<InitialPair> list = new ArrayList<InitialPair>();
+        //System.out.println(record);
         for(int i = 1; i < firstSplit.length; i++) {
             String[] sndSplit = firstSplit[i].split(",");
+            
             InitialPair p = new InitialPair(Integer.valueOf(sndSplit[0]), Integer.valueOf(sndSplit[1]), Integer.valueOf(sndSplit[2]));
             list.add(p);
         } 

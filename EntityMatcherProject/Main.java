@@ -9,13 +9,16 @@ import EntityMatcherProject.Rules.Rule;
 import EntityMatcherProject.Rules.RulePercentagePair;
 
 class Main {
+    static SaxTable saxTable = new SaxTable(5);
+    static SaxGenerator generator = new SaxGenerator(saxTable);
     static Parser parser = new Parser();
     static EntityMatcher em = new EntityMatcher();
     
     public static void main(String[] args) {
         boolean token = true;
         Scanner sc = new Scanner(System.in);
-
+       
+       
         List<RulePercentagePair> bestRuleList = em.getSortedRuleSet();
         System.out.println("Best Rule List:" + bestRuleList + "\n");
         while(token) {
@@ -66,7 +69,7 @@ class Main {
             }
             token = false;
             sc.close();    
-        }
+        } 
         List<Rule> disjunction = em.getDisjunctionRule();
         System.out.println("Disjunktion: " + disjunction);
        /*  HashMap<String, List<TableEntry>> map = Parser.getTableEntryMap();      
