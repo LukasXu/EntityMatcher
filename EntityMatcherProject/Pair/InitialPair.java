@@ -22,6 +22,10 @@ public class InitialPair {
         return frequency;
     }
 
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
+    }
+
     public int getMentions() {
         return mentions;
     }

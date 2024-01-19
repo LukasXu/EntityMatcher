@@ -67,7 +67,7 @@ public class Parser {
         }
         List<TableEntry> list = new ArrayList<>();
         for(int i = word.length(); i > 1 ; i--) {
-            String prefix = getPrefix(i, word);
+            String prefix = getPrefix(i, word); // Start from full word as prefix 
             list = tableEntryMap.get(prefix);
             if(list == null) {
                 continue;

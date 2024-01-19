@@ -37,6 +37,7 @@ public class InitialEntry {
         return Math.sqrt(sum / pairList.size());
     }
 
+    //Gets freqency average accros time line
     private void setOccurenceAvg() {
         double sum = 0;
         for(InitialPair p : pairList) {

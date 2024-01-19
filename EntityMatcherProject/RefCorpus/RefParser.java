@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import EntityMatcherProject.InitialEntry;
 import EntityMatcherProject.Pair.InitialPair;
 
 public class RefParser {
@@ -94,6 +96,20 @@ public class RefParser {
         boolean containsNumber = matcherNumber.find();
 
         return containsNumber;
+    }
+
+    public static InitialEntry parseRefInitialEntry(String record) {
+        String[] firstSplit = record.split("\t");  
+        String word = firstSplit[1];   
+        List<InitialPair> list = new ArrayList<InitialPair>();
+        //System.out.println(record);
+        for(int i = 2; i < firstSplit.length; i++) {
+            String[] sndSplit = firstSplit[i].split(",");
+            
+            InitialPair p = new InitialPair(Integer.valueOf(sndSplit[0]), Integer.valueOf(sndSplit[1]), Integer.valueOf(sndSplit[2]));
+            list.add(p);
+        } 
+        return new InitialEntry(word, list);              
     }
 
 }

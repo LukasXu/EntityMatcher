@@ -1,4 +1,9 @@
 package EntityMatcherProject;
+
+import java.util.List;
+
+import EntityMatcherProject.Pair.InitialPair;
+
 public class TableEntry {
     private String word;
     private String sax;
@@ -7,6 +12,7 @@ public class TableEntry {
     private int id;
     private double occurenceAvg;
     private static int counter = 0;
+    private List<InitialPair> pairList;
 
     public TableEntry(InitialEntry entry) {
         this.word = entry.getWord();
@@ -15,6 +21,7 @@ public class TableEntry {
         this.maxYear = entry.getMaxFreqYear();
         this.id = counter;
         this.occurenceAvg = entry.getOccurenceAvg();
+        this.pairList = entry.getPairList();
         counter++;
     }
 
@@ -51,5 +58,13 @@ public class TableEntry {
 
     public double getOccurenceAvg() {
         return occurenceAvg;
+    }
+
+    public List<InitialPair> getPairList() {
+        return pairList;
+    }
+
+    public void setPairList(List<InitialPair> pairList) {
+        this.pairList = pairList;
     }
 }

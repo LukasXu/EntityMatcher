@@ -15,8 +15,8 @@ public class OccurenceRule extends SimilarityFunction {
 
         double value = Math.abs(max - min) / max;
 
-        System.out.println("Word1: " + entry1.getWord() + " Word2: " + entry2.getWord());
-        System.out.println("Max: " + max + " Min: " + min + " Value: " + value);
+        //System.out.println("Word1: " + entry1.getWord() + " Word2: " + entry2.getWord());
+        //System.out.println("Max: " + max + " Min: " + min + " Value: " + value);
         if(value < 0.5) {
             return true;
         }

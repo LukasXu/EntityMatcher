@@ -20,7 +20,7 @@ class Main {
        
        
         List<RulePercentagePair> bestRuleList = em.getSortedRuleSet();
-        System.out.println("Best Rule List:" + bestRuleList + "\n");
+        //System.out.println("Best Rule List:" + bestRuleList + "\n");
         while(token) {
             if(bestRuleList.size() == 0 || EntityMatcher.getPosEx().size() == 0) {
                 break;
@@ -46,8 +46,8 @@ class Main {
                     em.filterRuleSet(bestRule); //Entfernt Beste Regel aus möglichen Rulesets
                     bestRuleList = em.recalculateBestRule();  //Neuste beste Regel
 
-                    System.out.println("New Pos Ex: " + EntityMatcher.getPosEx());
-                    System.out.println("Neue Beste Regeln: " + bestRuleList + "\n");
+                    //System.out.println("New Pos Ex: " + EntityMatcher.getPosEx());
+                    //System.out.println("Neue Beste Regeln: " + bestRuleList + "\n");
                     i = -1;
 
                 } else if(response.equals("n")) {
@@ -72,9 +72,10 @@ class Main {
         } 
         List<Rule> disjunction = em.getDisjunctionRule();
         System.out.println("Disjunktion: " + disjunction);
-       /*  HashMap<String, List<TableEntry>> map = Parser.getTableEntryMap();      
+        HashMap<String, List<TableEntry>> map = Parser.getTableEntryMap();      
         applyOnTable(disjunction, map); 
-          */
+        
+        Comparitor.compare();
         //System.out.println("Ergebnis: " + table);
     }
 
@@ -83,7 +84,7 @@ class Main {
         //Für jeden Präfix Gruppe wird die Disjunktion darauf ausgeführt 
         for(Map.Entry<String, List<TableEntry>> entry: map.entrySet()) {
             String key = entry.getKey();
-            List<TableEntry> list = entry.getValue(); 
+            List<TableEntry> list = entry.getValue(); //Prefix der Prefix Gruppe 
 
             if(list.size() <= 1) {
                 continue;

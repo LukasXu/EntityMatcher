@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.swing.text.TabExpander;
 
+import EntityMatcherProject.Pair.InitialPair;
 import EntityMatcherProject.Pair.TableEntryPair;
 import EntityMatcherProject.Rules.Rule;
 import EntityMatcherProject.Rules.RulePairComparitor;
@@ -41,7 +42,9 @@ public class EntityMatcher {
             rules.addAll(generateRuleSetSize2());  
             rules.addAll(generateRuleSetSize3());            
             ruleSet = rules;
-            System.out.println("Ruleset: " + ruleSet + "\n");
+
+            //System.out.println("NegEx: " + negEx);
+            //System.out.println("Ruleset: " + ruleSet + "\n");
 
             this.sortedRuleSet = getExampleResult();
             //System.out.println("Best Rule List: " + sortedRuleSet);
@@ -75,7 +78,6 @@ public class EntityMatcher {
                 }
             }
         }
-        System.out.println("NegEx: " + negEx);
     }
 
     
@@ -107,11 +109,58 @@ public class EntityMatcher {
         }
         System.out.println("Zusammengefasste Elemente: " + dummy);
 
-        //Falls Elemente zusammengefasst werden, schreibe es in table und die Paare in posEx
+        List<InitialPair> sumOfTimeSeries = new ArrayList<>();
+        for(int i = 0; i < dummy.size(); i++) {
+            if(i == 0) {
+                sumOfTimeSeries = dummy.get(i).getPairList();
+                continue;
+            }
+            sumOfTimeSeries = combineTimeSeries(sumOfTimeSeries, dummy.get(i).getPairList());    
+        } 
+
+        //Falls Elemente zusammengefasst werden, schreibe es in table
         if(dummy.size() > 0) {
-            table.add(dummy.get(0));
+            dummy.get(0).setPairList(sumOfTimeSeries); // Gets First Element of dummy and writes the sum of TimeSeries in it
+            table.add(dummy.get(0)); // Adds the first entry to table
         }
         System.out.println("Gefilterte Liste: " + table + "\n");
+    }
+
+    public static List<InitialPair> combineTimeSeries(List<InitialPair> timeList1, List<InitialPair> timeList2) {
+        int index1 = 0;
+        int index2 = 0;
+        List<InitialPair> result = new ArrayList<>();
+
+        while (index1 < timeList1.size() && index2 < timeList2.size()) {
+            InitialPair p1;
+            InitialPair p2;
+
+            if(index1 >= timeList1.size()) {
+                p2 = timeList2.get(index2);
+                result.add(p2);
+            } else if (index2 >= timeList2.size()) {
+                p1 = timeList1.get(index1);
+                result.add(p1);
+            }
+
+            p1 = timeList1.get(index1);
+            p2 = timeList2.get(index2);
+            
+            if(p1.getYear() < p2.getYear()) {
+                result.add(p1);
+                index1++;
+            } else if(p1.getYear() == p2.getYear()) {
+                int frequency = p1.getFrequency() + p2.getFrequency();  
+                InitialPair p = new InitialPair(p1.getYear(), frequency, 0);
+                result.add(p);
+                index1++;
+                index2++;
+            } else {
+                result.add(p2);
+                index2++;
+            }
+        }
+        return result;
     }
 
     //Errechnet anhand des Beispiels die beste Regel aus
