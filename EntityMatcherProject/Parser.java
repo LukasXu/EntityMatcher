@@ -23,6 +23,7 @@ public class Parser {
         //parseTableMap();
     }
 
+    //Printet Inhalt von tableEntryMap 
     public void parseTableMap() {
         for(Map.Entry<String, List<TableEntry>> entry: tableEntryMap.entrySet()) {
             String key = entry.getKey();
@@ -43,7 +44,7 @@ public class Parser {
                     continue;
                 }
 
-                Matcher matcherNumber = noNumberPattern.matcher(entry.getWord());
+                Matcher matcherNumber = noNumberPattern.matcher(entry.getWord()); // Um Wörter mit Zahlen zu filtern
                 boolean containsNumber = matcherNumber.find();
 
                 if(containsNumber == true) {
@@ -51,7 +52,7 @@ public class Parser {
                 }
 
                 TableEntry tableEntry = new TableEntry(entry);     
-                matchPrefix(2, tableEntry);
+                matchPrefix(2, tableEntry); //Schaut ob für Prefix der Länge n des Wortes im Entry schon ein Eintrag im Map existiert, falls nicht füge hinzu
             }
             sc.close();
         } catch (FileNotFoundException e) {
@@ -89,6 +90,7 @@ public class Parser {
         return null;
     }
 
+    //Gibt die ersten n-Stellen des Wortes wieder
     private static String getPrefix(int n, String word) {
         String prefix = "";
         //System.out.println("Word: "+ word+ " N: " + n);

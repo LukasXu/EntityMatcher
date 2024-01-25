@@ -2,6 +2,7 @@ package EntityMatcherProject;
 import java.util.List;
 
 import EntityMatcherProject.Pair.InitialPair;
+import EntityMatcherProject.Sax.SaxGenerator;
 
 public class InitialEntry {
     private String word;
@@ -49,24 +50,46 @@ public class InitialEntry {
 
     public int getMinFreqYear() {
         int num = 0;
+        int result = 0;
         for (int i = 0; i < pairList.size(); i++) {
+            if(pairList.get(i).getYear() < 1995) {
+                continue;
+            }
             int freq = pairList.get(i).getFrequency();
-            if (freq >= 10 || num == 0) {
-                num = pairList.get(i).getYear();
+            int year =  pairList.get(i).getYear();
+            if(num == 0) {
+                num = freq;
+                result = year;
+                continue;
+            }
+        
+            if (num > freq) {
+                result = year;
             }
         }
-        return num;
+        return result;
     }
 
     public int getMaxFreqYear() {
         int num = 0;
+        int result = 0;
         for (int i = 0; i < pairList.size(); i++) {
+            if(pairList.get(i).getYear() < 1995) {
+                continue;
+            }
             int freq = pairList.get(i).getFrequency();
-            if (freq > num) {
-                num = pairList.get(i).getYear();
+            int year =  pairList.get(i).getYear();
+            if(num == 0) {
+                num = freq;
+                result = year;
+                continue;
+            }
+        
+            if (num < freq) {
+                result = year;
             }
         }
-        return num;
+        return result;
     }
 
     public String toString() {

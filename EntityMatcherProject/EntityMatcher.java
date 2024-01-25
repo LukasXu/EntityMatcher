@@ -80,8 +80,6 @@ public class EntityMatcher {
         }
     }
 
-    
-
     private void initRules() {
     	ruleMap.put(0, new WordEditDistance());
         ruleMap.put(1, new SaxFunction());

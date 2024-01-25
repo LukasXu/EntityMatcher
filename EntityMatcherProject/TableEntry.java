@@ -12,7 +12,7 @@ public class TableEntry {
     private int id;
     private double occurenceAvg;
     private static int counter = 0;
-    private List<InitialPair> pairList;
+    private List<InitialPair> pairList; // time series entry list
 
     public TableEntry(InitialEntry entry) {
         this.word = entry.getWord();

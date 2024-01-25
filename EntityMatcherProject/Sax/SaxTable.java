@@ -1,4 +1,4 @@
-package EntityMatcherProject;
+package EntityMatcherProject.Sax;
 
 import java.util.ArrayList;
 import java.util.Collections;

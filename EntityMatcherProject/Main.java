@@ -7,17 +7,21 @@ import java.util.Scanner;
 import EntityMatcherProject.Pair.TableEntryPair;
 import EntityMatcherProject.Rules.Rule;
 import EntityMatcherProject.Rules.RulePercentagePair;
+import EntityMatcherProject.Sax.SaxGenerator;
+import EntityMatcherProject.Sax.SaxTable;
 
 class Main {
     static SaxTable saxTable = new SaxTable(5);
     static SaxGenerator generator = new SaxGenerator(saxTable);
     static Parser parser = new Parser();
     static EntityMatcher em = new EntityMatcher();
+    static GoogleTimeSeriesTable googleTimeSeriesTable = new GoogleTimeSeriesTable();
     
     public static void main(String[] args) {
         boolean token = true;
         Scanner sc = new Scanner(System.in);
-       
+        Comparitor comparitor = new Comparitor();
+        
        
         List<RulePercentagePair> bestRuleList = em.getSortedRuleSet();
         //System.out.println("Best Rule List:" + bestRuleList + "\n");
@@ -75,8 +79,10 @@ class Main {
         HashMap<String, List<TableEntry>> map = Parser.getTableEntryMap();      
         applyOnTable(disjunction, map); 
         
-        Comparitor.compare();
+        comparitor.compare();
+        EvaluationTable evaluationTable = comparitor.getEvaluationTable();
         //System.out.println("Ergebnis: " + table);
+        System.out.println("Evaluationtable: " + evaluationTable.getSize());
     }
 
     private static void applyOnTable(List<Rule> disjunction, HashMap<String, List<TableEntry>> map) {

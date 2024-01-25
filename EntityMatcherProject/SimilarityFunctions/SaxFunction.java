@@ -1,7 +1,7 @@
 package EntityMatcherProject.SimilarityFunctions;
 
-import EntityMatcherProject.SaxTable;
 import EntityMatcherProject.TableEntry;
+import EntityMatcherProject.Sax.SaxTable;
 
 public class SaxFunction extends SimilarityFunction{
     String name = "Sax Rule";

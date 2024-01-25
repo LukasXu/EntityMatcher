@@ -1,7 +1,9 @@
-package EntityMatcherProject;
+package EntityMatcherProject.Sax;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import EntityMatcherProject.InitialEntry;
 
 public class SaxGenerator {
     static SaxTable saxTable;

@@ -15,7 +15,7 @@ import EntityMatcherProject.Pair.InitialPair;
 
 public class RefParser {
     private static int counter = 0;
-    private static HashMap<String, Integer> refMap = new HashMap<String, Integer>();
+    private static HashMap<String, Integer> refMap = new HashMap<String, Integer>(); // Key = word, Ouput = id of word
     private RefTable refTable;
 
     public RefParser(RefTable refTable) {
@@ -69,7 +69,7 @@ public class RefParser {
                 //System.out.println(word);
                 continue;
             }
-            InitialPair initialPair = new InitialPair(year, frequency, 0);
+            InitialPair initialPair = new InitialPair(year, frequency, 0); // time series entry
 
            
 
